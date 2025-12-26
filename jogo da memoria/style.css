@@ -1,0 +1,258 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fundo roxo/azul vibrante */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+}
+
+.menu {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    animation: popIn 0.5s ease;
+}
+
+.menu h2 {
+    margin-bottom: 25px;
+    color: #4a00e0;
+    font-size: 24px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Botão Fácil: Verde Ciano Vibrante */
+.btn-facil {
+    background: linear-gradient(to right, #00b09b, #96c93d);
+    color: white;
+}
+
+/* Botão Médio: Laranja/Amarelo Solar */
+.btn-medio {
+    background: linear-gradient(to right, #f12711, #f5af19);
+    color: white;
+}
+
+/* Botão Difícil: Rosa/Roxo Neon */
+.btn-dificil {
+    background: linear-gradient(to right, #ec008c, #fc6767);
+    color: white;
+}
+
+/* Botão Voltar: Azul Profundo */
+.btn-voltar {
+    background: linear-gradient(to right, #2c3e50, #4ca1af);
+    color: white;
+    margin-top: 25px;
+}
+
+.menu .btn-voltar {
+    margin-top: 30px;
+}
+
+.game-board {
+    display: none;
+    grid-gap: 12px;
+    margin-bottom: 15px;
+    perspective: 1000px;
+}
+
+.game-board.facil {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.game-board.medio {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.game-board.dificil {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.card {
+    aspect-ratio: 1;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fundo da carta virada (imagem aparecendo) */
+.card.flipped {
+    background: white;
+    transform: rotateY(180deg);
+}
+
+/* Carta Encontrada: Dourado Vibrante */
+.card.matched {
+    background: linear-gradient(135deg, #FDC830 0%, #F37335 100%);
+    border: 2px solid #fff;
+    cursor: default;
+    opacity: 1;
+    animation: pulse 0.5s ease;
+}
+
+/* Carta fechada (verso): Gradiente Azul Moderno */
+.card:not(.flipped):not(.matched) {
+    background: linear-gradient(45deg, #12c2e9, #c471ed, #f64f59);
+}
+
+/* Ícone ou "padrão" visual para o verso da carta (opcional, css puro) */
+.card:not(.flipped):not(.matched)::after {
+    content: '?';
+    color: rgba(255,255,255,0.5);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card-content {
+    display: none;
+}
+
+.card-content img,
+.card img.card-content {
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+    border-radius: 8px;
+    /* Adiciona borda leve na imagem */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+}
+
+.card.flipped .card-content,
+.card.matched .card-content {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 24px;
+    }
+    
+    .info {
+        font-size: 16px;
+    }
+    
+    .card {
+        font-size: 28px;
+    }
+}
+
+.vitoria {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    animation: zoomIn 0.5s ease;
+}
+
+.vitoria h2 {
+    color: #00b09b; /* Verde Sucesso */
+    margin-bottom: 20px;
+    font-size: 32px;
+}
+
+.vitoria p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #555;
+    font-weight: bold;
+}
+
+.vitoria span {
+    color: #764ba2;
+    font-size: 22px;
+}
+
+/* Animações simples para dar vida */
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

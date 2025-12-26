@@ -1,0 +1,324 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ffeef8 0%, #ffe5f0 50%, #ffd4e5 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Tela Inicial */
+.title {
+    font-size: 2.5rem;
+    color: #d4356a;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(212, 53, 106, 0.2);
+    animation: bounceIn 1s ease;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #7a4069;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Botões */
+.btn {
+    width: 100%;
+    max-width: 300px;
+    padding: 18px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px auto;
+    display: block;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #ff6b9d 0%, #d4356a 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 53, 106, 0.4);
+}
+
+.btn-secondary {
+    background: white;
+    color: #d4356a;
+    border: 2px solid #d4356a;
+}
+
+.btn-secondary:hover {
+    background: #ffeef8;
+    transform: translateY(-2px);
+}
+
+.btn-spin {
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    color: #7a4069;
+    font-size: 1.5rem;
+    max-width: 100%;
+    margin-top: 30px;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.btn-spin:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+.btn-spin:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-return {
+    background: white;
+    color: #d4356a;
+    border: 2px solid #d4356a;
+    font-size: 1rem;
+    max-width: 250px;
+    margin-top: 30px;
+}
+
+/* Tela do Jogo */
+.game-title {
+    font-size: 1.8rem;
+    color: #d4356a;
+    margin-bottom: 30px;
+}
+
+/* Slot Machine */
+.slot-machine {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px auto;
+    padding: 30px 20px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 5px solid #ffd700;
+}
+
+.slot-column {
+    width: 90px;
+    height: 120px;
+    background: linear-gradient(135deg, #ffeef8 0%, #fff5fa 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid #ff6b9d;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.slot-items {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: transform 0.1s linear;
+}
+
+.slot-item {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+}
+
+/* Animação de Spin */
+.spinning .slot-items {
+    animation: spin 0.1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-120px); }
+}
+
+/* Mensagem de Resultado */
+.result-message {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    color: #7a4069;
+    font-weight: bold;
+    line-height: 1.6;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.4s ease;
+}
+
+.result-message.show {
+    opacity: 1;
+    transform: scale(1);
+    animation: zoomIn 0.5s ease;
+}
+
+/* Histórico */
+.history {
+    margin-top: 40px;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.history h3 {
+    color: #d4356a;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+#historyList {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 10px;
+    margin: 5px 0;
+    background: #ffeef8;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: #7a4069;
+    border-left: 4px solid #ff6b9d;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Scrollbar personalizada */
+#historyList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#historyList::-webkit-scrollbar-track {
+    background: #ffeef8;
+    border-radius: 10px;
+}
+
+#historyList::-webkit-scrollbar-thumb {
+    background: #ff6b9d;
+    border-radius: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 400px) {
+    .title {
+        font-size: 2rem;
+    }
+    
+    .slot-column {
+        width: 75px;
+        height: 100px;
+    }
+    
+    .slot-item {
+        height: 100px;
+        font-size: 3rem;
+    }
+    
+    .btn-spin {
+        font-size: 1.3rem;
+    }
+    
+    .result-message {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .slot-machine {
+        gap: 25px;
+        padding: 40px 30px;
+    }
+    
+    .slot-column {
+        width: 110px;
+        height: 140px;
+    }
+    
+    .slot-item {
+        height: 140px;
+        font-size: 5rem;
+    }
+}

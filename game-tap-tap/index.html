@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toque no Coração 💖</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="startScreen" class="screen active">
+            <h1>Toque no Coração 💖</h1>
+            <p class="subtitle">Mostre seu amor tocando nos corações!</p>
+            <div class="emoji-big">💒</div>
+            <div class="rules">
+                <p><strong>Como Jogar:</strong></p>
+                <p>✅ Toque no <strong>máximo de corações</strong> que conseguir em 30 segundos</p>
+                <p>⚠️ <strong>CUIDADO!</strong> Não toque nos bolos! 🎂</p>
+            </div>
+            
+            <div class="difficulty-selection">
+                <p class="difficulty-title">Escolha o Nível:</p>
+                <button class="difficulty-btn easy" onclick="startGame('easy')">
+                    😊 Fácil
+                    <span class="difficulty-desc">Poucos bolos</span>
+                </button>
+                <button class="difficulty-btn medium" onclick="startGame('medium')">
+                    😐 Moderado
+                    <span class="difficulty-desc">Equilíbrio</span>
+                </button>
+                <button class="difficulty-btn hard" onclick="startGame('hard')">
+                    😰 Difícil
+                    <span class="difficulty-desc">Muitos bolos!</span>
+                </button>
+            </div>
+
+            <div style="margin-top: 20px; width: 100%; max-width: 350px;">
+                <button class="btn-secondary" onclick="exitGame()">⬅ Voltar para Lista</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen game-screen">
+            <div class="game-header">
+                <div class="score">❤️ <span id="scoreDisplay">0</span></div>
+                <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
+            </div>
+            </div>
+
+        <div id="endScreen" class="screen">
+            <h1>Parabéns! 🎉</h1>
+            <div class="emoji-big">💝</div>
+            <div class="final-score" id="finalScore">0</div>
+            <p class="message" id="messageDisplay"></p>
+            <div class="record" id="recordDisplay"></div>
+            
+            <div class="end-buttons">
+                <button onclick="restartGame()">Jogar Novamente</button>
+                <button class="btn-secondary" onclick="goToMenu()">Menu Inicial</button>
+                <button class="btn-secondary" style="background: linear-gradient(135deg, #7a3a56 0%, #5c2b41 100%);" onclick="exitGame()">Sair do Jogo</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brick Breaker Mobile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="ui-layer">
+            <div id="stats-left">
+                <div>PTS: <span id="score">0</span></div>
+                <div>NÍVEL: <span id="level">1</span></div>
+            </div>
+
+            <div id="stats-right">
+                <div id="lives">❤️❤️</div>
+                <button id="btn-pause-toggle">⏸️</button>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="start-screen" class="screen active">
+            <h1>Brick Breaker 💥</h1>
+            <p>Destrua os tijolos!</p>
+            <p style="font-size: 0.9rem; margin-top: -20px; margin-bottom: 5px;">Arraste para mover • Toque para lançar</p>
+            
+            <button id="btn-start" class="btn primary">Jogar</button>
+            
+            <a href="../index.html" class="btn secondary link-btn">Voltar para o Menu de Jogos</a>
+        </div>
+
+        <div id="pause-screen" class="screen">
+            <h1>Pausado ✋</h1>
+            <button id="btn-resume" class="btn primary">Continuar</button>
+            <a href="./index.html" class="btn secondary link-btn">Sair para Menu</a>
+        </div>
+
+        <div id="game-over-screen" class="screen">
+            <h1>Game Over</h1>
+            <p>Nível alcançado: <span id="final-level">1</span></p>
+            <p>Pontuação Final: <span id="final-score">0</span></p>
+            <button id="btn-restart" class="btn primary">Tentar Novamente</button>
+            <a href="./index.html" class="btn secondary link-btn">Sair</a>
+        </div>
+
+        <div id="win-screen" class="screen">
+            <h1>Você Zerou! 🏆</h1>
+            <p>Parabéns, completou os 10 níveis!</p>
+            <p>Pontuação: <span id="win-score">0</span></p>
+            <button id="btn-play-again" class="btn primary">Jogar Novamente</button>
+            <a href="menu.html" class="btn secondary link-btn">Voltar ao Menu</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

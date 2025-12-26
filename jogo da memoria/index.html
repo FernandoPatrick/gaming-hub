@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Memória</title>
+     <link rel="icon" type="image/png" href="./images/cerebro2.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Jogo da Memória</h1>
+            <div class="info">
+                <div>⏱️ <span id="tempo">0</span>s</div>
+                <div>🔄 <span id="jogadas">0</span></div>
+            </div>
+        </div>
+
+        <div id="menu" class="menu">
+            <h2>Escolha a Dificuldade</h2>
+            <button class="btn btn-facil" onclick="iniciarJogo('facil')">😊 Fácil (3x2)</button>
+            <button class="btn btn-medio" onclick="iniciarJogo('medio')">😐 Médio (4x3)</button>
+            <button class="btn btn-dificil" onclick="iniciarJogo('dificil')">😤 Difícil (4x5)</button>
+            <a href="../index.html" class="btn btn-voltar" style="text-decoration: none; display: block;">⬅️ Voltar para Lista de Jogos</a>
+        </div>
+
+        <div id="game-board" class="game-board"></div>
+        <button id="btn-voltar" class="btn btn-voltar hidden" onclick="voltarMenu()">Voltar ao Menu</button>
+
+        <div id="vitoria" class="vitoria hidden">
+            <h2>🎉 Parabéns!</h2>
+            <p>Você venceu!</p>
+            <p>⏱️ Tempo: <span id="tempo-final">0</span> segundos</p>
+            <p>🔄 Jogadas: <span id="jogadas-final">0</span></p>
+            <button class="btn btn-facil" onclick="voltarMenu()">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
