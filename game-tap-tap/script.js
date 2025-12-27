@@ -5,16 +5,17 @@ let spawnInterval;
 let cakeInterval;
 let hearts = [];
 let gameActive = false;
+let isPaused = false;
 let currentDifficulty = 'medium';
-let activeElements = []; // Para rastrear posições dos elementos ativos
+let activeElements = []; 
 
 // Configurações de dificuldade
 const difficulties = {
     easy: {
-        heartInterval: 900,      // Corações aparecem mais devagar
-        cakeInterval: 3500,      // Bolos aparecem bem menos
-        heartDuration: 1500,     // Corações ficam mais tempo na tela
-        cakeDuration: 2000       // Bolos ficam mais tempo
+        heartInterval: 900,
+        cakeInterval: 3500,
+        heartDuration: 1500,
+        cakeDuration: 2000
     },
     medium: {
         heartInterval: 800,
@@ -23,17 +24,16 @@ const difficulties = {
         cakeDuration: 1500
     },
     hard: {
-        heartInterval: 600,      // Corações aparecem mais rápido
-        cakeInterval: 1200,      // Bolos aparecem MUITO mais
-        heartDuration: 900,      // Corações somem mais rápido
-        cakeDuration: 1200       // Bolos somem mais rápido
+        heartInterval: 600,
+        cakeInterval: 1200,
+        heartDuration: 900,
+        cakeDuration: 1200
     }
 };
 
-// Sons (usando Web Audio API para criar efeitos simples)
+// Sons
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Função para verificar se uma posição colide com elementos existentes
 function isPositionSafe(x, y, minDistance = 120) {
     for (let element of activeElements) {
         const distance = Math.sqrt(
@@ -46,49 +46,35 @@ function isPositionSafe(x, y, minDistance = 120) {
     return true;
 }
 
-// Função para gerar uma posição válida
 function getValidPosition() {
-    // Obter dimensões reais dos elementos baseado no CSS
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
     
-    // Tamanho do elemento varia com a tela
     let elementSize = 80;
-    if (screenWidth <= 400) {
-        elementSize = 70;
-    }
-    if (screenHeight >= 700) {
-        elementSize = 90;
-    }
+    if (screenWidth <= 400) elementSize = 70;
+    if (screenHeight >= 700) elementSize = 90;
     
-    // Margem menor mas segura
     const halfElement = elementSize / 2;
-    const margin = halfElement + 20; // metade do elemento + 20px de segurança
-    const headerHeight = 80; // Altura do header
+    const margin = halfElement + 20;
+    const headerHeight = 80; 
     
     const maxX = screenWidth - margin;
     const minX = margin;
     const maxY = screenHeight - margin;
-    const minY = headerHeight + margin; // Abaixo do header
+    const minY = headerHeight + margin; 
     
-    // Garantir que temos espaço suficiente para spawnar
     if (maxX <= minX || maxY <= minY) {
-        // Tela muito pequena, usar valores seguros no centro
-        return {
-            x: screenWidth / 2,
-            y: screenHeight / 2
-        };
+        return { x: screenWidth / 2, y: screenHeight / 2 };
     }
     
     let attempts = 0;
     let x, y;
     
-    // Tentar até 100 vezes encontrar uma posição válida
     do {
         x = minX + Math.random() * (maxX - minX);
         y = minY + Math.random() * (maxY - minY);
         attempts++;
-    } while (!isPositionSafe(x, y, 120) && attempts < 100); // Distância mínima de 120px entre centros
+    } while (!isPositionSafe(x, y, 120) && attempts < 100); 
     
     return { x, y };
 }
@@ -128,28 +114,37 @@ function playGameOverSound() {
 }
 
 function startGame(difficulty = 'medium') {
-    // Definir dificuldade
     currentDifficulty = difficulty;
-    const config = difficulties[difficulty];
     
-    // Resetar variáveis
     score = 0;
     timeLeft = 30;
     hearts = [];
-    activeElements = []; // Limpar posições
+    activeElements = [];
     gameActive = true;
+    isPaused = false;
     
-    // Trocar telas
+    // UI Reset
+    document.getElementById('pauseModal').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('elements-paused');
     document.getElementById('startScreen').classList.remove('active');
     document.getElementById('gameScreen').classList.add('active');
     
-    // Atualizar displays
+    // Limpar elementos antigos se houver (sem apagar o header)
+    clearGameElements();
+    
     updateScore();
     updateTimer();
     
-    // Iniciar timers
+    startIntervals();
+    spawnHeart(); 
+}
+
+function startIntervals() {
+    const config = difficulties[currentDifficulty];
+
+    // Timer do Jogo
     gameInterval = setInterval(() => {
-        if (!gameActive) return;
+        if (!gameActive || isPaused) return;
         
         timeLeft--;
         updateTimer();
@@ -159,23 +154,51 @@ function startGame(difficulty = 'medium') {
         }
     }, 1000);
     
-    // Spawnar corações (velocidade baseada na dificuldade)
+    // Spawnar corações
     spawnInterval = setInterval(() => {
-        if (!gameActive) return;
+        if (!gameActive || isPaused) return;
         spawnHeart();
     }, config.heartInterval);
     
-    // Spawnar bolos (frequência baseada na dificuldade)
+    // Spawnar bolos
     cakeInterval = setInterval(() => {
-        if (!gameActive) return;
+        if (!gameActive || isPaused) return;
         spawnCake();
     }, config.cakeInterval);
-    
-    spawnHeart(); // Spawnar primeiro coração imediatamente
+}
+
+function togglePause() {
+    if (!gameActive) return;
+
+    const pauseModal = document.getElementById('pauseModal');
+    const gameScreen = document.getElementById('gameScreen');
+
+    if (isPaused) {
+        // --- RETOMAR ---
+        isPaused = false;
+        pauseModal.classList.add('hidden');
+        gameScreen.classList.remove('elements-paused'); 
+        startIntervals();
+    } else {
+        // --- PAUSAR ---
+        isPaused = true;
+        pauseModal.classList.remove('hidden');
+        gameScreen.classList.add('elements-paused'); 
+        
+        clearInterval(gameInterval);
+        clearInterval(spawnInterval);
+        clearInterval(cakeInterval);
+    }
+}
+
+function clearGameElements() {
+    const gameScreen = document.getElementById('gameScreen');
+    const dynamicElements = gameScreen.querySelectorAll('.heart, .cake, .game-over');
+    dynamicElements.forEach(el => el.remove());
 }
 
 function spawnHeart() {
-    if (!gameActive) return;
+    if (!gameActive || isPaused) return;
     
     const config = difficulties[currentDifficulty];
     const gameScreen = document.getElementById('gameScreen');
@@ -183,40 +206,32 @@ function spawnHeart() {
     heart.className = 'heart';
     heart.innerHTML = '💖';
     
-    // Obter posição válida (sem colisões)
     const position = getValidPosition();
     
-    // Obter tamanho real do elemento
     let elementSize = 80;
     if (window.innerWidth <= 400) elementSize = 70;
     if (window.innerHeight >= 700) elementSize = 90;
     const halfSize = elementSize / 2;
     
-    // Centralizar o elemento na posição
     heart.style.left = (position.x - halfSize) + 'px';
     heart.style.top = (position.y - halfSize) + 'px';
     
-    // Registrar posição do elemento (centro)
     const elementData = { x: position.x, y: position.y, element: heart };
     activeElements.push(elementData);
     
-    // Adicionar evento de clique
     heart.onclick = () => {
-        if (!gameActive) return;
+        if (!gameActive || isPaused) return;
         if (!heart.classList.contains('clicked')) {
             heart.classList.add('clicked');
             score++;
             updateScore();
             playTapSound();
             
-            // Remover da lista de elementos ativos IMEDIATAMENTE
             const index = activeElements.findIndex(el => el.element === heart);
             if (index > -1) activeElements.splice(index, 1);
             
             setTimeout(() => {
-                if (heart.parentNode) {
-                    heart.remove();
-                }
+                if (heart.parentNode) heart.remove();
             }, 400);
         }
     };
@@ -224,26 +239,28 @@ function spawnHeart() {
     gameScreen.appendChild(heart);
     hearts.push(heart);
     
-    // Remover coração após duração baseada na dificuldade
     setTimeout(() => {
+        if (!gameActive || isPaused) return; // Se pausar, não remove (CSS cuida)
+        
         if (heart.parentNode && !heart.classList.contains('clicked')) {
-            heart.style.animation = 'fadeIn 0.3s ease-out reverse';
-            
-            // Remover da lista de elementos ativos
-            const index = activeElements.findIndex(el => el.element === heart);
-            if (index > -1) activeElements.splice(index, 1);
-            
-            setTimeout(() => {
-                if (heart.parentNode) {
-                    heart.remove();
+            // Verifica se está pausado antes de remover no final da animação
+            const checkPauseInterval = setInterval(() => {
+                if(!isPaused) {
+                    clearInterval(checkPauseInterval);
+                    if (heart.parentNode) {
+                        heart.style.animation = 'fadeIn 0.3s ease-out reverse';
+                        const index = activeElements.findIndex(el => el.element === heart);
+                        if (index > -1) activeElements.splice(index, 1);
+                        setTimeout(() => { if (heart.parentNode) heart.remove(); }, 300);
+                    }
                 }
-            }, 300);
+            }, 100);
         }
     }, config.heartDuration);
 }
 
 function spawnCake() {
-    if (!gameActive) return;
+    if (!gameActive || isPaused) return;
     
     const config = difficulties[currentDifficulty];
     const gameScreen = document.getElementById('gameScreen');
@@ -251,27 +268,21 @@ function spawnCake() {
     cake.className = 'cake';
     cake.innerHTML = '🎂';
     
-    // Obter posição válida (sem colisões)
     const position = getValidPosition();
     
-    // Obter tamanho real do elemento
     let elementSize = 80;
     if (window.innerWidth <= 400) elementSize = 70;
     if (window.innerHeight >= 700) elementSize = 90;
     const halfSize = elementSize / 2;
     
-    // Centralizar o elemento na posição
     cake.style.left = (position.x - halfSize) + 'px';
     cake.style.top = (position.y - halfSize) + 'px';
     
-    // Registrar posição do elemento (centro)
     const elementData = { x: position.x, y: position.y, element: cake };
     activeElements.push(elementData);
     
-    // Adicionar evento de clique - GAME OVER!
     cake.onclick = () => {
-        if (!gameActive) return;
-        // Remover da lista de elementos ativos ANTES de game over
+        if (!gameActive || isPaused) return;
         const index = activeElements.findIndex(el => el.element === cake);
         if (index > -1) activeElements.splice(index, 1);
         gameOver();
@@ -280,20 +291,21 @@ function spawnCake() {
     gameScreen.appendChild(cake);
     hearts.push(cake);
     
-    // Remover bolo após duração baseada na dificuldade
     setTimeout(() => {
+        if (!gameActive || isPaused) return;
+        
         if (cake.parentNode) {
-            cake.style.animation = 'fadeIn 0.3s ease-out reverse';
-            
-            // Remover da lista de elementos ativos
-            const index = activeElements.findIndex(el => el.element === cake);
-            if (index > -1) activeElements.splice(index, 1);
-            
-            setTimeout(() => {
-                if (cake.parentNode) {
-                    cake.remove();
+             const checkPauseInterval = setInterval(() => {
+                if(!isPaused) {
+                    clearInterval(checkPauseInterval);
+                    if (cake.parentNode) {
+                        cake.style.animation = 'fadeIn 0.3s ease-out reverse';
+                        const index = activeElements.findIndex(el => el.element === cake);
+                        if (index > -1) activeElements.splice(index, 1);
+                        setTimeout(() => { if (cake.parentNode) cake.remove(); }, 300);
+                    }
                 }
-            }, 300);
+             }, 100);
         }
     }, config.cakeDuration);
 }
@@ -302,19 +314,16 @@ function gameOver() {
     gameActive = false;
     playGameOverSound();
     
-    // Parar intervals
     clearInterval(gameInterval);
     clearInterval(spawnInterval);
     clearInterval(cakeInterval);
     
-    // Atualizar recorde específico da dificuldade
     const recordKey = `weddingGameRecord_${currentDifficulty}`;
     const record = parseInt(localStorage.getItem(recordKey) || '0');
     if (score > record) {
         localStorage.setItem(recordKey, score.toString());
     }
     
-    // Mostrar tela de game over
     const gameScreen = document.getElementById('gameScreen');
     const gameOverDiv = document.createElement('div');
     gameOverDiv.className = 'game-over';
@@ -346,116 +355,67 @@ function updateTimer() {
 function endGame() {
     gameActive = false;
     
-    // Parar intervals
     clearInterval(gameInterval);
     clearInterval(spawnInterval);
     clearInterval(cakeInterval);
     
-    // Remover todos os elementos
-    const gameScreen = document.getElementById('gameScreen');
-    while (gameScreen.firstChild) {
-        gameScreen.removeChild(gameScreen.firstChild);
-    }
+    clearGameElements();
     
-    // Recriar header para próximo jogo
-    gameScreen.innerHTML = `
-        <div class="game-header">
-            <div class="score">❤️ <span id="scoreDisplay">0</span></div>
-            <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
-        </div>
-    `;
-    
-    // Atualizar recorde específico da dificuldade
     const recordKey = `weddingGameRecord_${currentDifficulty}`;
     const record = parseInt(localStorage.getItem(recordKey) || '0');
     if (score > record) {
         localStorage.setItem(recordKey, score.toString());
     }
     
-    // Mostrar tela final
     document.getElementById('gameScreen').classList.remove('active');
     document.getElementById('endScreen').classList.add('active');
     document.getElementById('finalScore').textContent = score + ' pontos';
     
-    // Mensagem personalizada
     let message = '';
-    if (score >= 50) {
-        message = 'Você é um amor de convidado! 💕';
-    } else if (score >= 30) {
-        message = 'Que performance romântica! 💐';
-    } else if (score >= 15) {
-        message = 'Você tem um coração de ouro! ✨';
-    } else {
-        message = 'O amor está no ar! 🌸';
-    }
+    if (score >= 50) message = 'Você é um amor de convidado! 💕';
+    else if (score >= 30) message = 'Que performance romântica! 💐';
+    else if (score >= 15) message = 'Você tem um coração de ouro! ✨';
+    else message = 'O amor está no ar! 🌸';
+    
     document.getElementById('messageDisplay').textContent = message;
     
-    // Mostrar recorde da dificuldade atual
     const currentRecord = Math.max(score, record);
     document.getElementById('recordDisplay').innerHTML = `🏆 Recorde (${getDifficultyName()}): ${currentRecord} pontos`;
 }
 
 function restartGame() {
     document.getElementById('endScreen').classList.remove('active');
-    startGame(currentDifficulty); // Jogar novamente com a mesma dificuldade
+    startGame(currentDifficulty);
 }
 
 function restartGameFromOver() {
-    // Limpar a tela de game over
-    const gameScreen = document.getElementById('gameScreen');
-    while (gameScreen.firstChild) {
-        gameScreen.removeChild(gameScreen.firstChild);
-    }
-    
-    // Recriar header
-    gameScreen.innerHTML = `
-        <div class="game-header">
-            <div class="score">❤️ <span id="scoreDisplay">0</span></div>
-            <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
-        </div>
-    `;
-    
-    // Iniciar novo jogo com a mesma dificuldade
+    clearGameElements();
     startGame(currentDifficulty);
 }
 
 function goToMenu() {
-    // Limpar qualquer resto de jogo
     gameActive = false;
+    isPaused = false;
+    
     clearInterval(gameInterval);
     clearInterval(spawnInterval);
     clearInterval(cakeInterval);
     
-    // Limpar a tela de jogo
-    const gameScreen = document.getElementById('gameScreen');
-    while (gameScreen.firstChild) {
-        gameScreen.removeChild(gameScreen.firstChild);
-    }
+    document.getElementById('pauseModal').classList.add('hidden');
+    document.getElementById('gameScreen').classList.remove('elements-paused');
+
+    clearGameElements();
     
-    // Recriar header para próximo jogo
-    gameScreen.innerHTML = `
-        <div class="game-header">
-            <div class="score">❤️ <span id="scoreDisplay">0</span></div>
-            <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
-        </div>
-    `;
-    
-    // Voltar para o menu inicial
     document.getElementById('endScreen').classList.remove('active');
     document.getElementById('gameScreen').classList.remove('active');
     document.getElementById('startScreen').classList.add('active');
 }
 
 function getDifficultyName() {
-    const names = {
-        'easy': 'Fácil',
-        'medium': 'Moderado',
-        'hard': 'Difícil'
-    };
+    const names = { 'easy': 'Fácil', 'medium': 'Moderado', 'hard': 'Difícil' };
     return names[currentDifficulty] || 'Moderado';
 }
 
-// Prevenir scroll em mobile durante o jogo
 document.addEventListener('touchmove', (e) => {
     if (document.getElementById('gameScreen').classList.contains('active')) {
         e.preventDefault();
@@ -463,6 +423,5 @@ document.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 function exitGame() {
-    // Redireciona para o arquivo index.html na pasta anterior (menu principal)
     window.location.href = '../index.html';
 }

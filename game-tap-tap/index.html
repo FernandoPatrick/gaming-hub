@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./favicon.png">
     <title>Toque no Coração 💖</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -42,8 +43,22 @@
         <div id="gameScreen" class="screen game-screen">
             <div class="game-header">
                 <div class="score">❤️ <span id="scoreDisplay">0</span></div>
+                
+                <button class="pause-btn" onclick="togglePause()">⏸️</button>
+                
                 <div class="timer">⏱️ <span id="timerDisplay">30</span>s</div>
             </div>
+
+            <div id="pauseModal" class="pause-modal hidden">
+                <div class="pause-content">
+                    <h2>Jogo Pausado ⏸️</h2>
+                    <div class="pause-buttons">
+                        <button onclick="togglePause()">Continuar</button>
+                        <button class="btn-secondary" onclick="goToMenu()">Sair para Menu</button>
+                    </div>
+                </div>
+            </div>
+            
             </div>
 
         <div id="endScreen" class="screen">
